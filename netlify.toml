@@ -3,6 +3,9 @@
   functions = "netlify/functions"
   publish = "dist/spa"
 
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["server/**"]
 
 [functions]
   external_node_modules = ["express"]
