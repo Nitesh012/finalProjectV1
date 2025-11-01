@@ -39,6 +39,7 @@ async function initTransporter() {
   return transporter;
 }
 
+// Generate 6-digit OTP
 function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -51,10 +52,8 @@ export const sendOTP: RequestHandler = async (req, res) => {
   if (!email) return res.status(400).json({ error: "Email is required" });
 
   try {
-    // Initialize transporter
-    await initTransporter();
+    const transporter = await initTransporter();
 
-    // Generate OTP
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -79,6 +78,8 @@ export const sendOTP: RequestHandler = async (req, res) => {
     });
 
     console.log("OTP sent:", info.messageId);
+    console.log("Preview URL:", nodemailer.getTestMessageUrl(info)); // 👈 added line
+
     res.json({ message: "OTP sent successfully", email });
   } catch (error: any) {
     console.error("Error sending OTP:", error);
@@ -100,25 +101,21 @@ export const verifyOTP: RequestHandler = async (req, res) => {
       return res.status(404).json({ error: "OTP not found or expired" });
     }
 
-    // Check expiration
     if (new Date() > otpRecord.expiresAt) {
       await (OTP as any).deleteOne({ _id: otpRecord._id });
       return res.status(400).json({ error: "OTP has expired" });
     }
 
-    // Check attempts
     if (otpRecord.attempts >= 5) {
       await (OTP as any).deleteOne({ _id: otpRecord._id });
       return res.status(429).json({ error: "Too many attempts. Please request a new OTP." });
     }
 
-    // Verify OTP
     if (otpRecord.otp !== otp) {
       await (OTP as any).findByIdAndUpdate(otpRecord._id, { $inc: { attempts: 1 } });
       return res.status(401).json({ error: "Invalid OTP" });
     }
 
-    // Mark as verified
     await (OTP as any).findByIdAndUpdate(otpRecord._id, { verified: true });
 
     res.json({ message: "OTP verified successfully", email });
@@ -136,13 +133,10 @@ export const resendOTP: RequestHandler = async (req, res) => {
   if (!email) return res.status(400).json({ error: "Email is required" });
 
   try {
-    // Initialize transporter
-    await initTransporter();
+    const transporter = await initTransporter();
 
-    // Delete existing OTP
     await (OTP as any).deleteMany({ email });
 
-    // Generate and send new OTP
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -162,6 +156,8 @@ export const resendOTP: RequestHandler = async (req, res) => {
     });
 
     console.log("OTP resent:", info.messageId);
+    console.log("Preview URL:", nodemailer.getTestMessageUrl(info)); // 👈 added line
+
     res.json({ message: "OTP resent successfully", email });
   } catch (error: any) {
     console.error("Error resending OTP:", error);
