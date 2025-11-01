@@ -6,11 +6,8 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["server/**"]
+  # ⚠️ remove "external_node_modules" — not needed when using esbuild
 
-[functions]
-  external_node_modules = ["express"]
-  node_bundler = "esbuild"
-  
 [[redirects]]
   force = true
   from = "/api/*"
