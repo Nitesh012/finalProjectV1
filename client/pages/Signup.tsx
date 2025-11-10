@@ -28,7 +28,9 @@ export default function Signup() {
       );
       setStep("otp");
     } catch (err: any) {
-      setError(err?.message || "Failed to send OTP");
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Failed to send OTP");
+      setError(errorMsg);
+      console.error("Signup error:", { err, errorMsg });
     } finally {
       setLoading(false);
     }
@@ -45,7 +47,9 @@ export default function Signup() {
       );
       setStep("verify");
     } catch (err: any) {
-      setError(err?.message || "Invalid OTP");
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Invalid OTP");
+      setError(errorMsg);
+      console.error("Verify OTP error:", { err, errorMsg });
     } finally {
       setLoading(false);
     }
