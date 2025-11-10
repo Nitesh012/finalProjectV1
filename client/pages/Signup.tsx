@@ -75,7 +75,9 @@ export default function Signup() {
         navigate("/teachers");
       }
     } catch (err: any) {
-      setError(err?.message || String(err));
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Failed to create account");
+      setError(errorMsg);
+      console.error("Create account error:", { err, errorMsg });
     } finally {
       setLoading(false);
     }
