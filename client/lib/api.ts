@@ -25,20 +25,51 @@ export async function api<TReq = unknown, TRes = unknown>(
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `Request failed with ${res.status}`);
-    }
     const contentType = res.headers.get("content-type");
+
+    if (!res.ok) {
+      let errorMessage = `Request failed with ${res.status}`;
+      try {
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = (await res.json()) as any;
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } else {
+          errorMessage = (await res.text()) || errorMessage;
+        }
+      } catch {
+        // If body parsing fails, use default error message
+      }
+      throw new Error(errorMessage);
+    }
+
     if (contentType && contentType.includes("application/json")) {
       return (await res.json()) as TRes;
     }
     return (await res.text()) as TRes;
   } catch (err: any) {
     // Network-level errors (failed to fetch, CORS, DNS)
-    console.error("API call failed", { path, method, err });
-    if (err instanceof TypeError && err.message && err.message.includes("failed to fetch")) {
-      throw new Error("Network error: failed to reach the server. Check your connection or server status.");
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : typeof err === "string"
+          ? err
+          : JSON.stringify(err);
+    const stack = err instanceof Error ? err.stack : "";
+    console.error("API call failed", {
+      path,
+      method,
+      error: errorMessage,
+      stack,
+      fullError: JSON.stringify(err, null, 2),
+    });
+    if (
+      err instanceof TypeError &&
+      errorMessage &&
+      errorMessage.includes("failed to fetch")
+    ) {
+      throw new Error(
+        "Network error: failed to reach the server. Check your connection or server status.",
+      );
     }
     throw err;
   }

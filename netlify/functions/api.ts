@@ -1,8 +1,7 @@
-// netlify/functions/api.js
-import express from "express";
+import "dotenv/config";
 import serverless from "serverless-http";
+import { createServer } from "../../server/index";
 
-const app = express();
-app.get("/", (req, res) => res.json({ msg: "Express on Netlify!" }));
+const app = createServer();
 
 export const handler = serverless(app);
