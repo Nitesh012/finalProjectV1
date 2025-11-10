@@ -6,7 +6,7 @@ primary_region = "iad"
   builder = "heroku"
 
 [env]
-  MONGODB_URI = "mongodb+srv://rawatt046_db_user:UoMiqyms1nx2S4ju@cluster0.rrladca.mongodb.net/optimizer?appName=Cluster0"
+  MONGODB_URI = "mongodb+srv://rawatt046_db_user:UoMiqyms1nx2S4ju@cluster0.rrladca.mongodb.net/test?appName=Cluster0"
   JWT_SECRET = "niteshsingh"
 
 [http_service]
