@@ -48,8 +48,9 @@ export async function api<TReq = unknown, TRes = unknown>(
     return (await res.text()) as TRes;
   } catch (err: any) {
     // Network-level errors (failed to fetch, CORS, DNS)
-    console.error("API call failed", { path, method, err });
-    if (err instanceof TypeError && err.message && err.message.includes("failed to fetch")) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("API call failed", { path, method, error: errorMessage, err });
+    if (err instanceof TypeError && errorMessage && errorMessage.includes("failed to fetch")) {
       throw new Error("Network error: failed to reach the server. Check your connection or server status.");
     }
     throw err;
