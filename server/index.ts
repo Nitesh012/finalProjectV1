@@ -24,6 +24,8 @@ export function createServer() {
     res.json({ message: ping });
   });
 
+  app.get("/api/health", health);
+
   // Demo
   app.get("/api/demo", handleDemo);
 
