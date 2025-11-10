@@ -46,7 +46,12 @@ function generateOTP(): string {
 
 export const sendOTP: RequestHandler = async (req, res) => {
   const db = await connectMongo();
-  if (!db.connected) return res.status(503).json({ error: "Database not connected" });
+  if (!db.connected) {
+    const reason = (db as any).reason || "Unknown error";
+    console.error("❌ OTP/sendOTP - Database connection failed:", reason);
+    return res.status(503).json({ error: "Database not connected", reason });
+  }
+  console.log("✅ OTP/sendOTP - Database connected successfully");
 
   const { email } = req.body as { email: string };
   if (!email) return res.status(400).json({ error: "Email is required" });
