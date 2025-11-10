@@ -25,11 +25,23 @@ export async function api<TReq = unknown, TRes = unknown>(
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `Request failed with ${res.status}`);
-    }
     const contentType = res.headers.get("content-type");
+
+    if (!res.ok) {
+      let errorMessage = `Request failed with ${res.status}`;
+      try {
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await res.json() as any;
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } else {
+          errorMessage = await res.text() || errorMessage;
+        }
+      } catch {
+        // If body parsing fails, use default error message
+      }
+      throw new Error(errorMessage);
+    }
+
     if (contentType && contentType.includes("application/json")) {
       return (await res.json()) as TRes;
     }
