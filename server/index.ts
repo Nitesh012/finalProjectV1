@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { health } from "./routes/health";
 import { signup, login, resetPassword } from "./routes/auth";
 import { sendOTP, verifyOTP, resendOTP } from "./routes/otp";
 import { listStudents, createStudent, getStudent, removeStudent, studentsMiddleware, getMyStudent, linkStudentUser, unlinkStudentUser } from "./routes/students";
