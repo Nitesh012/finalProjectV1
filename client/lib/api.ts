@@ -48,14 +48,14 @@ export async function api<TReq = unknown, TRes = unknown>(
     return (await res.text()) as TRes;
   } catch (err: any) {
     // Network-level errors (failed to fetch, CORS, DNS)
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err.message : (typeof err === "string" ? err : JSON.stringify(err));
     const stack = err instanceof Error ? err.stack : "";
     console.error("API call failed", {
       path,
       method,
       error: errorMessage,
       stack,
-      originalError: err
+      fullError: JSON.stringify(err, null, 2)
     });
     if (err instanceof TypeError && errorMessage && errorMessage.includes("failed to fetch")) {
       throw new Error("Network error: failed to reach the server. Check your connection or server status.");
