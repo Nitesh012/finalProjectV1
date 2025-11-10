@@ -28,9 +28,9 @@ export default function Signup() {
       );
       setStep("otp");
     } catch (err: any) {
-      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Failed to send OTP");
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : (err?.message || JSON.stringify(err) || "Failed to send OTP"));
       setError(errorMsg);
-      console.error("Signup error:", { err, errorMsg });
+      console.error("Signup error:", errorMsg, err);
     } finally {
       setLoading(false);
     }
@@ -47,9 +47,9 @@ export default function Signup() {
       );
       setStep("verify");
     } catch (err: any) {
-      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Invalid OTP");
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : (err?.message || JSON.stringify(err) || "Invalid OTP"));
       setError(errorMsg);
-      console.error("Verify OTP error:", { err, errorMsg });
+      console.error("Verify OTP error:", errorMsg, err);
     } finally {
       setLoading(false);
     }
@@ -74,9 +74,9 @@ export default function Signup() {
         navigate("/teachers");
       }
     } catch (err: any) {
-      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : "Failed to create account");
+      const errorMsg = err instanceof Error ? err.message : (typeof err === "string" ? err : (err?.message || JSON.stringify(err) || "Failed to create account"));
       setError(errorMsg);
-      console.error("Create account error:", { err, errorMsg });
+      console.error("Create account error:", errorMsg, err);
     } finally {
       setLoading(false);
     }
