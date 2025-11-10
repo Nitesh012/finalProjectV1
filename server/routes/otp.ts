@@ -66,7 +66,13 @@ export const sendOTP: RequestHandler = async (req, res) => {
     await (OTP as any).deleteMany({ email });
 
     // Create new OTP record
-    await (OTP as any).create({ email, otp, expiresAt, attempts: 0, verified: false });
+    await (OTP as any).create({
+      email,
+      otp,
+      expiresAt,
+      attempts: 0,
+      verified: false,
+    });
 
     // Send email
     const info = await transporter.sendMail({
@@ -94,10 +100,12 @@ export const sendOTP: RequestHandler = async (req, res) => {
 
 export const verifyOTP: RequestHandler = async (req, res) => {
   const db = await connectMongo();
-  if (!db.connected) return res.status(503).json({ error: "Database not connected" });
+  if (!db.connected)
+    return res.status(503).json({ error: "Database not connected" });
 
   const { email, otp } = req.body as { email: string; otp: string };
-  if (!email || !otp) return res.status(400).json({ error: "Email and OTP are required" });
+  if (!email || !otp)
+    return res.status(400).json({ error: "Email and OTP are required" });
 
   try {
     const otpRecord = await (OTP as any).findOne({ email });
@@ -113,11 +121,15 @@ export const verifyOTP: RequestHandler = async (req, res) => {
 
     if (otpRecord.attempts >= 5) {
       await (OTP as any).deleteOne({ _id: otpRecord._id });
-      return res.status(429).json({ error: "Too many attempts. Please request a new OTP." });
+      return res
+        .status(429)
+        .json({ error: "Too many attempts. Please request a new OTP." });
     }
 
     if (otpRecord.otp !== otp) {
-      await (OTP as any).findByIdAndUpdate(otpRecord._id, { $inc: { attempts: 1 } });
+      await (OTP as any).findByIdAndUpdate(otpRecord._id, {
+        $inc: { attempts: 1 },
+      });
       return res.status(401).json({ error: "Invalid OTP" });
     }
 
@@ -132,7 +144,8 @@ export const verifyOTP: RequestHandler = async (req, res) => {
 
 export const resendOTP: RequestHandler = async (req, res) => {
   const db = await connectMongo();
-  if (!db.connected) return res.status(503).json({ error: "Database not connected" });
+  if (!db.connected)
+    return res.status(503).json({ error: "Database not connected" });
 
   const { email } = req.body as { email: string };
   if (!email) return res.status(400).json({ error: "Email is required" });
@@ -145,7 +158,13 @@ export const resendOTP: RequestHandler = async (req, res) => {
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await (OTP as any).create({ email, otp, expiresAt, attempts: 0, verified: false });
+    await (OTP as any).create({
+      email,
+      otp,
+      expiresAt,
+      attempts: 0,
+      verified: false,
+    });
 
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || "noreply@example.com",

@@ -5,10 +5,32 @@ import { handleDemo } from "./routes/demo";
 import { health } from "./routes/health";
 import { signup, login, resetPassword } from "./routes/auth";
 import { sendOTP, verifyOTP, resendOTP } from "./routes/otp";
-import { listStudents, createStudent, getStudent, removeStudent, studentsMiddleware, getMyStudent, linkStudentUser, unlinkStudentUser } from "./routes/students";
-import { addAssessment, listAssessments, assessmentsMiddleware } from "./routes/assessments";
-import { assignRemedial, listRemedial, updateProgress, remedialMiddleware } from "./routes/remedial";
-import { listResources, createResource, resourcesMiddleware } from "./routes/resources";
+import {
+  listStudents,
+  createStudent,
+  getStudent,
+  removeStudent,
+  studentsMiddleware,
+  getMyStudent,
+  linkStudentUser,
+  unlinkStudentUser,
+} from "./routes/students";
+import {
+  addAssessment,
+  listAssessments,
+  assessmentsMiddleware,
+} from "./routes/assessments";
+import {
+  assignRemedial,
+  listRemedial,
+  updateProgress,
+  remedialMiddleware,
+} from "./routes/remedial";
+import {
+  listResources,
+  createResource,
+  resourcesMiddleware,
+} from "./routes/resources";
 
 export function createServer() {
   const app = express();
